@@ -27,7 +27,7 @@ const deposit = () => { //function to recieve deposit from user
     
 };
 
-const depositAmount = deposit();
+const depositAmount = deposit(); //sets deposit amount equal to result of function
 console.log(depositAmount)
 
 
