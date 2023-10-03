@@ -33,7 +33,7 @@ const SYMBOL_VALUES = { //object to represent the value of each symbol
 
 
 /******function to recieve deposit from user*****/
-const deposit = () => { 
+const deposit = () => { //deposit equals valid returned numberDepositAmount
 
     /****infinite loop to continue to prompt user until valid deposit amt is entered****/
     while(true){ 
@@ -52,7 +52,7 @@ const deposit = () => {
 };
 
 /*******function to determine number of lines to bet on*******/
-const getNumberOfLines = () => {
+const getNumberOfLines = () => { //getNumberOfLines equals valid returned numberOfLines
     /****infinite loop to continue to prompt user until valid number of lines is entered****/
     while(true){ 
         const lines = prompt("Enter number of lines to bet on (1-3): "); 
@@ -68,7 +68,7 @@ const getNumberOfLines = () => {
     }
 };
 
-/*******function to collect a bet amount********/
+/*******function to collect a bet amount per line********/
 const getBet = (balance, lines) => { //bet is based on current balance user has; must pass in balance as a parameter
     while(true){ 
         const bet = prompt("Enter bet per line: "); 
@@ -96,12 +96,13 @@ const spin = () => {
         } 
     }
 
-    //                                                                                                         A                                                                                           
-    const reels = [[], [], []]; //triple nested array, each nested array represents a column of 3 rows     ex: A
-    //                                                                                                         A
+    //                                                                                                         A B C                                                                                         
+    const reels = []; // will be triple nested array, each nested array represents a column of 3 rows     ex: A B C
+    //                                                                                                         A B C
     
     /*filling up each reel*/
     for(let i = 0; i < COLS; i++){ //for each column (nested array)
+     reels.push([]); //adds a nested array for each column
      const reelSymbols = [...symbols]; //declares an array equal to symbols; represents available symbols PER REEL; once symbol used it is removed
        for (let j = 0; j < ROWS; j++){ //for each row in that column
         /*randomly selecting symbol from 0 to (reelSymbols.length-1)*/
@@ -115,18 +116,51 @@ const spin = () => {
     return reels;
 };
 
-const reels = spin();
-console.log(reels);
+
+/***function to transpose reels into actual slot rows****/
+const transpose = (reels) => {
+
+// Transposing a matrix/2D array
+// [[A B C], [D D D], [A A A]] --> 
+// column-focused to row-focused
+/*     [A B C]      [A D A]
+       [D D D] ---> [B D A]
+       [A A A]      [C D A]
+*/
+
+    const rows = [];
+    for( let i = 0; i < ROWS; i++){
+        rows.push([]); ///for each row, push an array to represent the column
+        for(let j = 0; j < COLS; j++){ //now loop through every column in that row
+            rows[i].push(reels[j][i]); //adds symbol to rows in correct order
+        }
+    }
+
+    return rows;
+};
 
 
+/****function to print the rows*****/
+const printRows = (rows) => {
+    for (const row of rows) { //looping through every nested array(column) inside of rows
+        let rowString = "";
+        for(const [i, symbol] of row.entries()) {
+            rowString += symbol; //concatenates symbol into array
+        }
+    }
+}
 
 /*******IMPLEMENTATION********/
 let balance = deposit(); //let declares variable but allows to adjust value of variable later --- balance is total amt user has available to play with
-console.log(balance);
-const numberOfLines = getNumberOfLines();
-console.log(numberOfLines);
+console.log(balance); //prints the balance 
+const numberOfLines = getNumberOfLines(); //receives lines from user
+console.log(numberOfLines); //prints lines
 const bet = getBet(balance, numberOfLines);
 console.log(bet);
+const reels = spin(); //creates reels from returned value of spin function
+const rows = transpose(reels);
+console.log(reels); //prints reels
+console.log(rows);
 
 
 
