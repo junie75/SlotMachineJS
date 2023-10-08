@@ -142,27 +142,77 @@ const transpose = (reels) => {
 
 /****function to print the rows*****/
 const printRows = (rows) => {
-    for (const row of rows) { //looping through every nested array(column) inside of rows
+    for (const row of rows) { //looping through every nested row inside of the array
         let rowString = "";
-        for(const [i, symbol] of row.entries()) {
+        for(const [i, symbol] of row.entries()) { //The entries() method of Array instances returns a new array iterator object that contains the key/value pairs for each index in the array.
+                                                  // could use row.next().value to return each individual key/value pair
             rowString += symbol; //concatenates symbol into array
+            if (i != row.length - 1) //if not the last symbol in the row
+            {
+                rowString += " | ";
+            }
         }
+        console.log(rowString);
+    }
+};
+
+/*****function to check if the user won*****/
+const getWinnings = (rows, bet, lines) => {
+    let winnings = 0;
+    
+    for(let row = 0; row < lines; row++){
+        const symbols = rows[row]; //checking symbols at each row
+        let allSame = true; //if one of the symbols is not equal, change to false
+
+        for( const symbol of symbols){ //loop through each symbol
+            if (symbol != symbols[0]){ //check if symbol is the same as the first
+                allSame = false; //did not win on this line
+                break;
+            }
+        }
+
+        if(allSame){
+            //after line is checked, value of that line added to winnings (if it is a winning line)
+            winnings += bet * SYMBOL_VALUES[symbols[0]];  //amount won is equal to the bet * the value of the winning symbol
+        }
+    }
+    return winnings;
+};
+
+
+/******function to run the game******/
+const game = () => {
+    //get initial balance from the user
+    let balance = deposit(); //let declares variable but allows to adjust value of variable later --- balance is total amt user has available to play with
+    
+    while (true) { //continue playing until user does not want to, or unable to
+    console.log("You have a balance of $" + balance);
+    const numberOfLines = getNumberOfLines(); //receives num of lines to bet on from user
+    const bet = getBet(balance, numberOfLines); //receives bet per line from the user
+    balance -= bet * numberOfLines; //decrease balance based on bet per line
+    const reels = spin(); //creates reels from returned value of spin function
+    const rows = transpose(reels); //transposes the reels into the correct order of rows
+    printRows(rows);
+    const winnings = getWinnings(rows, bet, numberOfLines);
+    balance += winnings; //add winnings to the user's balance
+    console.log("You won, $" + winnings.toString());
+
+    if(balance <= 0){ //if user runs out of mone
+        console.log("GAME OVER: All out of money :{");
+        break;
+    }
+
+    //determine if user wants to continue
+    const playAgain = prompt("Play again? (y/n) ");
+    
+
+    if(playAgain.toUpperCase() != "Y") //if user does not want to play again
+        break;
     }
 }
 
 /*******IMPLEMENTATION********/
-let balance = deposit(); //let declares variable but allows to adjust value of variable later --- balance is total amt user has available to play with
-console.log(balance); //prints the balance 
-const numberOfLines = getNumberOfLines(); //receives lines from user
-console.log(numberOfLines); //prints lines
-const bet = getBet(balance, numberOfLines);
-console.log(bet);
-const reels = spin(); //creates reels from returned value of spin function
-const rows = transpose(reels);
-console.log(reels); //prints reels
-console.log(rows);
-
-
+game();
 
 
 
